@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   Server, 
   Globe, 
   ShieldCheck, 
@@ -11,7 +11,9 @@ import {
   ChevronUp, 
   Cloud, 
   Zap,
-  CheckCircle
+  CheckCircle,
+  RotateCw,
+  Award
 } from 'lucide-react';
 
 // --- Componentes de UI Reutilizáveis ---
@@ -195,6 +197,152 @@ export default function App() {
         </div>
       </header>
 
+      {/* --- Domain Search Bar (New) --- */}
+      <section className="bg-white py-12 border-b border-gray-200">
+        <div className="max-w-3xl mx-auto px-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#0A1F04] mb-6">
+            Registre seu domínio agora mesmo
+          </h2>
+          <form action="#" className="flex flex-col md:flex-row gap-2 md:gap-0">
+            {/* Input com label flutuante */}
+            <div className="relative flex-grow h-[50px] bg-gray-100 rounded-md md:rounded-r-none border border-gray-300 focus-within:border-[#4CD91E] focus-within:ring-1 focus-within:ring-[#4CD91E] transition-all">
+              <input 
+                id="domain" 
+                name="domain"
+                placeholder="Digite o domínio desejado" 
+                required 
+                className="peer w-full h-full border-none bg-transparent p-0 pt-4 text-lg text-gray-800 placeholder-transparent focus:outline-none focus-visible:outline-none px-4" 
+              />
+              <label 
+                htmlFor="domain" 
+                className="pointer-events-none absolute left-4 select-none text-gray-500 transition-all duration-200 top-1/2 -translate-y-1/2 text-lg 
+                           peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-lg
+                           peer-focus:top-1.5 peer-focus:-translate-y-0 peer-focus:text-xs
+                           peer-[:not(:placeholder-shown)]:top-1.5 peer-[:not(:placeholder-shown)]:-translate-y-0 peer-[:not(:placeholder-shown)]:text-xs"
+              >
+                Digite o domínio desejado
+              </label>
+            </div>
+            
+            {/* Seletor de Extensão */}
+            <div className="flex h-[50px] bg-gray-200 text-gray-700 font-semibold items-center px-4 rounded-md md:rounded-none">
+              <span>.com.br</span>
+              <ChevronDown size={20} className="ml-2" />
+            </div>
+
+            {/* Botão de Busca */}
+            <button type="submit" className="h-[50px] bg-[#4CD91E] text-white px-8 rounded-md md:rounded-l-none font-bold hover:brightness-110 transition-all text-lg">
+              Buscar
+            </button>
+          </form>
+
+          <ul className="mt-8 flex flex-col md:flex-row justify-center gap-x-8 gap-y-4 text-sm text-gray-600">
+            <li className="flex items-center gap-2">
+              <CheckCircle size={16} className="text-[#4CD91E] flex-shrink-0" />
+              <span className="whitespace-nowrap">Mais credibilidade aos seus clientes</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle size={16} className="text-[#4CD91E] flex-shrink-0" />
+              <span className="whitespace-nowrap">Exclusividade do nome da sua marca</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CheckCircle size={16} className="text-[#4CD91E] flex-shrink-0" />
+              <span className="whitespace-nowrap">Mais chances de ser encontrado</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      {/* --- Black Friday Offers --- */}
+      <div className="bg-gray-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-[#0A1F04] mb-8">
+            Não perca as ofertas da Black Friday
+          </h2>
+          <div className="flex flex-col md:flex-row justify-center items-center gap-x-12 gap-y-6 text-gray-700">
+            <div className="flex items-center gap-3">
+              <Headphones size={20} className="text-[#4CD91E]" />
+              <span className="font-medium">Suporte 24h</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Award size={20} className="text-[#4CD91E]" />
+              <span className="font-medium">30 dias para pedir reembolso</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <RotateCw size={20} className="text-[#4CD91E]" />
+              <span className="font-medium">Cancele a qualquer momento</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* --- VPS Section --- */}
+      <Section id="vps">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold text-[#0A1F04]">Servidores VPS Robustos</h2>
+          <p className="text-gray-600 mt-4">
+            Ambientes isolados com proteção DDoS Grátis e autonomia total (Root).
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* VPS Plan 1 */}
+          <VPSCard 
+            title="Smart-Web"
+            price="29,90"
+            features={[
+              "Até 16GB de RAM",
+              "Até 8 Cores",
+              "400GB HD Raid 10",
+              "Até 3 IP's (IPV4)",
+              "Proteção DDoS Grátis"
+            ]}
+            description="Melhor custo x benefício para serviços WEB e sites."
+            highlight={false}
+          />
+          
+          {/* VPS Plan 2 */}
+          <VPSCard 
+            title="Full-Range"
+            price="34,90"
+            features={[
+              "Até 12GB RAM",
+              "Até 10 Cores (Dedicados)",
+              "480GB HD",
+              "Até 3 IP's (IPV4)",
+              "Escalabilidade Garantida"
+            ]}
+            description="Recursos robustos para qualquer atividade pesada."
+            highlight={true}
+            tag="Mais Vendido"
+          />
+
+          {/* VPS Plan 3 */}
+          <VPSCard 
+            title="Windows Server"
+            price="30,90"
+            features={[
+              "Até 32GB de RAM",
+              "Até 180GB HD",
+              "Até 3 IP's (IPV4)",
+              "Windows Server OS",
+              "Desempenho Superior"
+            ]}
+            description="Facilidades do Windows com custo reduzido."
+            highlight={false}
+          />
+        </div>
+        
+        <div className="mt-12 text-center bg-green-50 rounded-xl p-6 border border-green-100">
+          <h4 className="font-bold text-[#0A1F04] flex items-center justify-center gap-2">
+            <Headphones size={20}/> Suporte Especializado
+          </h4>
+          <p className="text-gray-600 mt-2">
+            Fazemos a instalação e configuração de software local mediante solicitação (apenas em servidores Linux).
+          </p>
+        </div>
+      </Section>
+
       {/* --- Services Grid --- */}
       <Section id="serviços">
         <div className="text-center mb-16">
@@ -284,73 +432,6 @@ export default function App() {
           </div>
         </div>
       </div>
-
-      {/* --- VPS Section --- */}
-      <Section id="vps">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-[#0A1F04]">Servidores VPS Robustos</h2>
-          <p className="text-gray-600 mt-4">
-            Ambientes isolados com proteção DDoS Grátis e autonomia total (Root).
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* VPS Plan 1 */}
-          <VPSCard 
-            title="Smart-Web"
-            price="29,90"
-            features={[
-              "Até 16GB de RAM",
-              "Até 8 Cores",
-              "400GB HD Raid 10",
-              "Até 3 IP's (IPV4)",
-              "Proteção DDoS Grátis"
-            ]}
-            description="Melhor custo x benefício para serviços WEB e sites."
-            highlight={false}
-          />
-          
-          {/* VPS Plan 2 */}
-          <VPSCard 
-            title="Full-Range"
-            price="34,90"
-            features={[
-              "Até 12GB RAM",
-              "Até 10 Cores (Dedicados)",
-              "480GB HD",
-              "Até 3 IP's (IPV4)",
-              "Escalabilidade Garantida"
-            ]}
-            description="Recursos robustos para qualquer atividade pesada."
-            highlight={true}
-            tag="Mais Vendido"
-          />
-
-          {/* VPS Plan 3 */}
-          <VPSCard 
-            title="Windows Server"
-            price="30,90"
-            features={[
-              "Até 32GB de RAM",
-              "Até 180GB HD",
-              "Até 3 IP's (IPV4)",
-              "Windows Server OS",
-              "Desempenho Superior"
-            ]}
-            description="Facilidades do Windows com custo reduzido."
-            highlight={false}
-          />
-        </div>
-        
-        <div className="mt-12 text-center bg-green-50 rounded-xl p-6 border border-green-100">
-          <h4 className="font-bold text-[#0A1F04] flex items-center justify-center gap-2">
-            <Headphones size={20}/> Suporte Especializado
-          </h4>
-          <p className="text-gray-600 mt-2">
-            Fazemos a instalação e configuração de software local mediante solicitação (apenas em servidores Linux).
-          </p>
-        </div>
-      </Section>
 
       {/* --- FAQ Section --- */}
       <Section id="faq" className="bg-white">
