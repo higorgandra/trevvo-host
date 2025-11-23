@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Server, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
+  // Efeito para bloquear o scroll do body quando a página de login está ativa
+  useEffect(() => {
+    document.body.classList.add('overflow-hidden');
+
+    // Função de limpeza: remove a classe quando o componente é desmontado
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, []); // Array vazio garante que o efeito rode apenas na montagem e desmontagem
+
   return (
     <div className="relative bg-[#051402] text-white min-h-screen flex items-center justify-center p-4 overflow-hidden">
       {/* Abstract Background Elements */}
@@ -11,13 +21,13 @@ const LoginPage = () => {
         <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-green-800 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Botão para voltar */}
-      <Link to="/" className="absolute top-6 left-6 z-20 flex items-center gap-2 text-green-200 hover:text-white transition-colors">
-        <ArrowLeft size={20} />
-        <span>Voltar ao Início</span>
-      </Link>
-
       <div className="relative z-10 w-full max-w-md">
+        {/* Botão para voltar, posicionado em relação à caixa de login */}
+        <Link to="/" className="absolute bottom-full left-0 mb-4 flex items-center gap-2 text-green-200 hover:text-white transition-colors">
+          <ArrowLeft size={20} />
+          <span>Voltar ao Início</span>
+        </Link>
+
         <div className="bg-black/30 backdrop-blur-sm border border-[#4CD91E]/30 p-8 rounded-2xl shadow-2xl text-center">
           {/* Logo */}
           <div className="flex justify-center items-center gap-2 mb-6">
@@ -43,6 +53,7 @@ const LoginPage = () => {
                 name="email"
                 placeholder="seuemail@exemplo.com"
                 className="w-full bg-black/40 border border-green-800/50 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#4CD91E] transition-all"
+                required
               />
             </div>
             <div>
@@ -55,6 +66,7 @@ const LoginPage = () => {
                 name="password"
                 placeholder="••••••••"
                 className="w-full bg-black/40 border border-green-800/50 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#4CD91E] transition-all"
+                required
               />
             </div>
 
