@@ -1,4 +1,4 @@
-{/* Versão: 1.2.0 */}
+{/* Versão: 1.2.1 */}
 import React, { useState, useEffect } from 'react';
 import {
   Server, 
@@ -96,7 +96,7 @@ export default function App() {
     if (element) {
       const navbarHeight = navbar ? navbar.offsetHeight : 0;
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - navbarHeight;
+      const offsetPosition = elementPosition - navbarHeight - (window.innerWidth < 768 ? 0 : 0);
 
       window.scrollTo({
         top: offsetPosition,
