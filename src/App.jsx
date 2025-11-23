@@ -8,6 +8,8 @@ import {
   Menu, 
   X, 
   ChevronDown, 
+  ChevronLeft,
+  ChevronRight,
   ChevronUp, 
   Cloud, 
   Zap,
@@ -54,15 +56,34 @@ const Badge = ({ children }) => (
 export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedVpsPlan, setSelectedVpsPlan] = useState('Full-Range');
+  const [selectedServiceIndex, setSelectedServiceIndex] = useState(0);
+  const [selectedResellerCycle, setSelectedResellerCycle] = useState('mensal');
+  const [resellerDropdownOpen, setResellerDropdownOpen] = useState(false);
 
-  // Detectar scroll para mudar a navbar
+  // Efeito para controlar o estilo da navbar ao rolar
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+      // Define se o fundo da navbar deve ser branco
+      setIsScrolled(currentScrollY > 10);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Efeito para bloquear o scroll do body quando o menu mobile está aberto
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      // Adiciona a classe para esconder o overflow do body
+      document.body.classList.add('overflow-hidden');
+    }
+
+    // Função de limpeza: remove a classe quando o componente é desmontado ou o estado muda
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [mobileMenuOpen]); // Executa o efeito sempre que mobileMenuOpen mudar
 
   const scrollToSection = (id) => {
     setMobileMenuOpen(false);
@@ -72,11 +93,107 @@ export default function App() {
     }
   };
 
+  const vpsPlans = [
+    {
+      id: 'Smart-Web',
+      title: "Smart-Web",
+      price: "29,90",
+      features: [
+        "Até 16GB de RAM",
+        "Até 8 Cores",
+        "400GB HD Raid 10",
+        "Até 3 IP's (IPV4)",
+        "Proteção DDoS Grátis"
+      ],
+      description: "Melhor custo x benefício para serviços WEB e sites.",
+      highlight: true,
+      tag: "Custo-Benefício"
+    },
+    {
+      id: 'Full-Range',
+      title: "Full-Range",
+      price: "34,90",
+      features: [
+        "Até 12GB RAM",
+        "Até 10 Cores (Dedicados)",
+        "480GB HD",
+        "Até 3 IP's (IPV4)",
+        "Escalabilidade Garantida"
+      ],
+      description: "Recursos robustos para qualquer atividade pesada.",
+      highlight: true,
+      tag: "Mais Vendido"
+    },
+    {
+      id: 'Windows Server',
+      title: "Windows Server",
+      price: "30,90",
+      features: ["Até 32GB de RAM", "Até 180GB HD", "Até 3 IP's (IPV4)", "Windows Server OS", "Desempenho Superior"],
+      description: "Facilidades do Windows com custo reduzido.",
+      highlight: true,
+      tag: "Para Windows"
+    }
+  ];
+
+  const servicesData = [
+    {
+      icon: <Cloud size={40} />,
+      title: "Revenda de Hospedagem",
+      desc: "Monte sua própria empresa de hospedagem com nossa infraestrutura white-label."
+    },
+    {
+      icon: <Server size={40} />,
+      title: "Servidores VPS",
+      desc: "Plataformas isoladas para jogos, sistemas e aplicações pesadas."
+    },
+    {
+      icon: <Globe size={40} />,
+      title: "Hospedagem de Sites",
+      desc: "Ambiente seguro, cPanel e tudo que seu site precisa para rodar liso."
+    },
+    {
+      icon: <ShieldCheck size={40} />,
+      title: "Registro de Domínios",
+      desc: "Garanta o endereço da sua marca na internet agora mesmo."
+    }
+  ];
+
+  const handleNextService = () => {
+    setSelectedServiceIndex((prevIndex) => (prevIndex + 1) % servicesData.length);
+  };
+
+  const handlePrevService = () => {
+    setSelectedServiceIndex((prevIndex) => (prevIndex - 1 + servicesData.length) % servicesData.length);
+  };
+
+  // Para facilitar o acesso ao serviço selecionado
+  const selectedService = servicesData[selectedServiceIndex];
+
+  const resellerCycles = {
+    mensal: {
+      id: 'mensal',
+      name: '1 mês',
+      priceInt: '49',
+      priceDec: '90',
+      total: null
+    },
+    trimestral: {
+      id: 'trimestral',
+      name: '3 meses',
+      priceInt: '44',
+      priceDec: '91',
+      total: 'R$ 134,73'
+    }
+  };
+
+  const selectedCycleData = resellerCycles[selectedResellerCycle];
+
   return (
-    <div className="font-sans text-gray-800 bg-gray-50 min-h-screen">
-      
-      {/* --- Navbar --- */}
-      <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-3' : 'bg-transparent py-5'}`}>
+    <>
+      {/* --- Navbar --- (Movida para fora do container principal para evitar problemas de overflow) */}
+      <nav className={`fixed w-full z-50 transition-all duration-300 
+        ${isScrolled ? 'bg-white shadow-md py-3' : 'bg-transparent py-5'}
+      `}>
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollToSection('hero')}>
             <div className="w-10 h-10 bg-[#4CD91E] rounded-lg flex items-center justify-center text-white shadow-lg shadow-green-500/30">
@@ -108,20 +225,28 @@ export default function App() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className={isScrolled ? 'text-[#0A1F04]' : 'text-white'}>
-              {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            <button onClick={() => setMobileMenuOpen(true)} className={isScrolled ? 'text-[#0A1F04]' : 'text-white'}>
+              <Menu size={28} />
             </button>
           </div>
         </div>
 
         {/* Mobile Menu Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-xl py-4 flex flex-col items-center space-y-4 border-t">
+          <div className="md:hidden fixed inset-0 bg-white z-50 flex flex-col items-center justify-center space-y-8">
+            {/* Botão de Fechar (dentro do menu) */}
+            <button 
+              onClick={() => setMobileMenuOpen(false)} 
+              className="absolute top-5 right-4 text-gray-800"
+            >
+              <X size={32} />
+            </button>
+
             {['Início', 'Serviços', 'Revenda', 'VPS', 'FAQ', 'Contato'].map((item) => (
               <button 
                 key={item}
                 onClick={() => scrollToSection(item.toLowerCase() === 'início' ? 'hero' : item.toLowerCase())}
-                className="text-gray-800 font-medium text-lg py-2 w-full text-center hover:bg-green-50 hover:text-[#4CD91E]"
+                className="text-gray-800 font-semibold text-2xl py-2 w-full text-center hover:text-[#4CD91E] transition-colors"
               >
                 {item}
               </button>
@@ -130,11 +255,13 @@ export default function App() {
         )}
       </nav>
 
+      <div className="font-sans text-gray-800 bg-gray-50 min-h-screen">
+
       {/* --- Hero Section --- */}
       {/* Fundo alterado para um tom de verde muito escuro (quase preto) para contraste com o neon */}
-      <header id="hero" className="relative bg-[#051402] text-white min-h-[90vh] flex items-center pt-20 overflow-hidden">
+      <header id="hero" className="relative bg-[#051402] text-white min-h-screen flex items-center pt-20 overflow-x-hidden">
         {/* Abstract Background Elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20 pointer-events-none">
           <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-[#4CD91E] rounded-full blur-3xl"></div>
           <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-green-800 rounded-full blur-3xl"></div>
         </div>
@@ -225,7 +352,7 @@ export default function App() {
             </div>
             
             {/* Seletor de Extensão */}
-            <div className="flex h-[50px] bg-gray-200 text-gray-700 font-semibold items-center px-4 rounded-md md:rounded-none">
+            <div className="hidden md:flex h-[50px] bg-gray-200 text-gray-700 font-semibold items-center px-4 rounded-md md:rounded-none">
               <span>.com.br</span>
               <ChevronDown size={20} className="ml-2" />
             </div>
@@ -253,29 +380,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* --- Black Friday Offers --- */}
-      <div className="bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-[#0A1F04] mb-8">
-            Não perca as ofertas da Black Friday
-          </h2>
-          <div className="flex flex-col md:flex-row justify-center items-center gap-x-12 gap-y-6 text-gray-700">
-            <div className="flex items-center gap-3">
-              <Headphones size={20} className="text-[#4CD91E]" />
-              <span className="font-medium">Suporte 24h</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Award size={20} className="text-[#4CD91E]" />
-              <span className="font-medium">30 dias para pedir reembolso</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <RotateCw size={20} className="text-[#4CD91E]" />
-              <span className="font-medium">Cancele a qualquer momento</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* --- VPS Section --- */}
       <Section id="vps">
         <div className="text-center mb-16">
@@ -285,52 +389,39 @@ export default function App() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* VPS Plan 1 */}
-          <VPSCard 
-            title="Smart-Web"
-            price="29,90"
-            features={[
-              "Até 16GB de RAM",
-              "Até 8 Cores",
-              "400GB HD Raid 10",
-              "Até 3 IP's (IPV4)",
-              "Proteção DDoS Grátis"
-            ]}
-            description="Melhor custo x benefício para serviços WEB e sites."
-            highlight={false}
-          />
-          
-          {/* VPS Plan 2 */}
-          <VPSCard 
-            title="Full-Range"
-            price="34,90"
-            features={[
-              "Até 12GB RAM",
-              "Até 10 Cores (Dedicados)",
-              "480GB HD",
-              "Até 3 IP's (IPV4)",
-              "Escalabilidade Garantida"
-            ]}
-            description="Recursos robustos para qualquer atividade pesada."
-            highlight={true}
-            tag="Mais Vendido"
-          />
+        {/* Mobile Tab Selector */}
+        <div className="md:hidden mb-8 bg-gray-200 p-1 rounded-lg flex justify-between">
+          {vpsPlans.map(plan => (
+            <button
+              key={plan.id}
+              onClick={() => setSelectedVpsPlan(plan.id)}
+              className={`w-1/3 py-2 text-sm font-bold rounded-md transition-all duration-300 ${selectedVpsPlan === plan.id ? 'bg-white text-[#0A1F04] shadow' : 'bg-transparent text-gray-600'}`}
+            >
+              {plan.title === 'Windows Server' ? 'Windows' : plan.title}
+            </button>
+          ))}
+        </div>
 
-          {/* VPS Plan 3 */}
-          <VPSCard 
-            title="Windows Server"
-            price="30,90"
-            features={[
-              "Até 32GB de RAM",
-              "Até 180GB HD",
-              "Até 3 IP's (IPV4)",
-              "Windows Server OS",
-              "Desempenho Superior"
-            ]}
-            description="Facilidades do Windows com custo reduzido."
-            highlight={false}
-          />
+        {/* Mobile Card Display */}
+        <div className="md:hidden">
+          {vpsPlans.filter(plan => plan.id === selectedVpsPlan).map(plan => (
+            <VPSCard key={plan.id} {...plan} />
+          ))}
+        </div>
+
+        {/* Desktop Grid */}
+        <div className="hidden md:grid md:grid-cols-3 gap-8">
+          {vpsPlans.map(plan => (
+            <VPSCard 
+              key={plan.id}
+              title={plan.title}
+              price={plan.price}
+              features={plan.features}
+              description={plan.description}
+              highlight={plan.highlight}
+              tag={plan.tag}
+            />
+          ))}
         </div>
         
         <div className="mt-12 text-center bg-green-50 rounded-xl p-6 border border-green-100">
@@ -352,33 +443,43 @@ export default function App() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <ServiceCard 
-            icon={<Cloud size={40} />}
-            title="Revenda de Hospedagem"
-            desc="Monte sua própria empresa de hospedagem com nossa infraestrutura white-label."
-          />
-          <ServiceCard 
-            icon={<Server size={40} />}
-            title="Servidores VPS"
-            desc="Plataformas isoladas para jogos, sistemas e aplicações pesadas."
-          />
-          <ServiceCard 
-            icon={<Globe size={40} />}
-            title="Hospedagem de Sites"
-            desc="Ambiente seguro, cPanel e tudo que seu site precisa para rodar liso."
-          />
-          <ServiceCard 
-            icon={<ShieldCheck size={40} />}
-            title="Registro de Domínios"
-            desc="Garanta o endereço da sua marca na internet agora mesmo."
-          />
+        {/* Mobile Carousel */}
+        <div className="md:hidden">
+          {/* Navegador de Serviços */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <button onClick={handlePrevService} className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+              <ChevronLeft className="text-gray-600" />
+            </button>
+            <h3 className="text-xl font-bold text-[#0A1F04] text-center w-64">
+              {selectedService.title}
+            </h3>
+            <button onClick={handleNextService} className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+              <ChevronRight className="text-gray-600" />
+            </button>
+          </div>
+
+          {/* Card do Serviço Exibido */}
+          <div className="max-w-sm mx-auto">
+            <ServiceCard
+              key={selectedServiceIndex}
+              icon={selectedService.icon}
+              title={selectedService.title}
+              desc={selectedService.desc}
+            />
+          </div>
+        </div>
+
+        {/* Desktop Grid */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {servicesData.map((service, index) => (
+            <ServiceCard key={index} {...service} />
+          ))}
         </div>
       </Section>
 
       {/* --- Revenda Highlight --- */}
-      <div id="revenda" className="bg-white py-20 border-y border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-16 items-center">
+      <div id="revenda" className="bg-white py-20 border-y border-gray-200 overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-4">
           <div>
             <Badge>TOP SELLER</Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-[#0A1F04] mb-6">
@@ -409,29 +510,65 @@ export default function App() {
             </div>
           </div>
 
-          <div className="relative">
-             {/* Price Card */}
-            <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 text-center transform hover:-translate-y-2 transition-transform duration-300">
-               <h3 className="text-2xl font-bold text-gray-800">Revenda Mensal</h3>
-               <div className="my-6">
-                 <span className="text-gray-400 text-lg align-top">R$</span>
-                 <span className="text-5xl font-extrabold text-[#4CD91E]">49</span>
-                 <span className="text-gray-600 text-xl font-bold">,90</span>
-                 <span className="text-gray-400 block mt-2">/mês</span>
-               </div>
-               <Button className="w-full shadow-green-200">Contratar Agora</Button>
-               <p className="text-xs text-gray-500 mt-4">Plataforma Linux. Ativação imediata.</p>
+          {/* Mobile Plan Selector */}
+          <div className="lg:hidden mt-12">
+            <div className="mb-4 relative">
+              <label htmlFor="reseller-cycle-button" className="text-sm font-bold text-gray-600">Duração da assinatura</label>
+              <div className="relative mt-1">
+                {/* Botão que abre o dropdown customizado */}
+                <button
+                  id="reseller-cycle-button"
+                  onClick={() => setResellerDropdownOpen(!resellerDropdownOpen)}
+                  className="w-full flex justify-between items-center bg-gray-100 border border-gray-300 rounded-lg py-3 px-4 text-lg font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#4CD91E] focus:border-transparent"
+                >
+                  <span>{selectedCycleData.name}</span>
+                  <ChevronDown className={`transition-transform duration-300 ${resellerDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
 
-               <div className="mt-8 pt-8 border-t border-gray-100">
-                 <h4 className="text-lg font-bold text-gray-800 mb-2">Ou Plano Trimestral</h4>
-                 <p className="text-gray-600">Por apenas <span className="font-bold text-[#4CD91E]">R$ 134,73</span></p>
-               </div>
+                {/* Opções do Dropdown */}
+                {resellerDropdownOpen && (
+                  <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
+                    {Object.values(resellerCycles).map(cycle => (
+                      <button
+                        key={cycle.id}
+                        onClick={() => {
+                          setSelectedResellerCycle(cycle.id);
+                          setResellerDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 text-lg font-medium transition-colors ${selectedResellerCycle === cycle.id ? 'bg-[#4CD91E] text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                      >
+                        {cycle.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Price Card (now shared between mobile and desktop) */}
+          <div className="relative mt-12 lg:mt-0">
+            <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 text-center transform lg:hover:-translate-y-2 transition-transform duration-300">
+              <h3 className="text-2xl font-bold text-gray-800">
+                {selectedResellerCycle === 'mensal' ? 'Revenda Mensal' : 'Revenda Trimestral'}
+              </h3>
+              <div className="my-6">
+                <span className="text-gray-400 text-lg align-top">R$</span>
+                <span className="text-5xl font-extrabold text-[#4CD91E]">{selectedCycleData.priceInt}</span>
+                <span className="text-gray-600 text-xl font-bold">,{selectedCycleData.priceDec}</span>
+                <span className="text-gray-400 block mt-2">/mês</span>
+              </div>
+              <Button className="w-full shadow-green-200">Contratar Agora</Button>
+              <p className="text-xs text-gray-500 mt-4">Plataforma Linux. Ativação imediata.</p>
+
+              {selectedCycleData.total && <p className="text-sm text-gray-600 mt-4">Total: <span className="font-bold">{selectedCycleData.total}</span></p>}
             </div>
              {/* Decor */}
             <div className="absolute -z-10 top-10 -right-10 w-full h-full bg-[#4CD91E]/10 rounded-2xl"></div>
           </div>
         </div>
       </div>
+
 
       {/* --- FAQ Section --- */}
       <Section id="faq" className="bg-white">
@@ -501,8 +638,8 @@ export default function App() {
           <p>&copy; {new Date().getFullYear()} TrevvoHost. Todos os direitos reservados.</p>
         </div>
       </footer>
-
     </div>
+    </>
   );
 }
 
