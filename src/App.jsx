@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import {
   Server, 
   Globe, 
@@ -17,6 +18,8 @@ import {
   RotateCw,
   Award
 } from 'lucide-react';
+
+import LoginPage from './LoginPage';
 
 // --- Componentes de UI Reutilizáveis ---
 
@@ -53,13 +56,15 @@ const Badge = ({ children }) => (
 
 // --- Componentes Principais ---
 
-export default function App() {
+const MainLayout = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedVpsPlan, setSelectedVpsPlan] = useState('Full-Range');
   const [selectedServiceIndex, setSelectedServiceIndex] = useState(0);
   const [selectedResellerCycle, setSelectedResellerCycle] = useState('mensal');
   const [resellerDropdownOpen, setResellerDropdownOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   // Efeito para controlar o estilo da navbar ao rolar
   useEffect(() => {
@@ -86,10 +91,27 @@ export default function App() {
   }, [mobileMenuOpen]); // Executa o efeito sempre que mobileMenuOpen mudar
 
   const scrollToSection = (id) => {
+    // Se estivermos em outra página, primeiro navega para a home
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      // Aguarda um momento para a página carregar antes de rolar
+      setTimeout(() => performScroll(id), 100);
+      return;
+    }
+    performScroll(id);
+  };
+
+  const performScroll = (id) => {
     setMobileMenuOpen(false);
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    const section = document.getElementById(id);
+    if (section) {
+      const navbar = document.querySelector('nav');
+      const navbarHeight = navbar ? navbar.offsetHeight : 0;
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY - navbarHeight;
+      window.scrollTo({
+        top: sectionTop,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -215,12 +237,12 @@ export default function App() {
                 {item}
               </button>
             ))}
-            <button 
-              onClick={() => scrollToSection('contato')}
-              className="bg-[#4CD91E] text-white px-5 py-2 rounded-full font-medium hover:brightness-110 transition-all shadow-lg shadow-green-500/20"
+            <Link
+              to="/login"
+              className="bg-[#4CD91E] text-white px-5 py-2 rounded-full font-medium hover:brightness-110 transition-all shadow-lg shadow-green-500/20 text-center"
             >
               Área do Cliente
-            </button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -242,11 +264,24 @@ export default function App() {
               <X size={32} />
             </button>
 
-            {['Início', 'Serviços', 'Revenda', 'VPS', 'FAQ', 'Contato'].map((item) => (
+            {['Início', 'Serviços', 'Revenda', 'VPS', 'FAQ', 'Área do Cliente'].map((item) => (
               <button 
                 key={item}
-                onClick={() => scrollToSection(item.toLowerCase() === 'início' ? 'hero' : item.toLowerCase())}
-                className="text-gray-800 font-semibold text-2xl py-2 w-full text-center hover:text-[#4CD91E] transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  if (item === 'Área do Cliente') {
+                    navigate('/login');
+                  } else {
+                    const sectionId = item.toLowerCase() === 'início' ? 'hero' : item.toLowerCase();
+                    scrollToSection(sectionId);
+                  }
+                }}
+                className={
+                  item === 'Área do Cliente'
+                    ? "bg-[#4CD91E] text-white font-semibold text-xl py-3 px-8 rounded-lg shadow-md hover:brightness-110 transition-all"
+                    : "text-gray-800 font-semibold text-2xl py-2 w-full text-center hover:text-[#4CD91E] transition-colors"
+                }
               >
                 {item}
               </button>
@@ -640,6 +675,15 @@ export default function App() {
       </footer>
     </div>
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<MainLayout />} />
+      <Route path="/login" element={<LoginPage />} />
+    </Routes>
   );
 }
 
