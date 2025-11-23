@@ -92,8 +92,16 @@ export default function App() {
   const scrollToSection = (id) => {
     setMobileMenuOpen(false);
     const element = document.getElementById(id);
+    const navbar = document.getElementById('main-navbar');
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const navbarHeight = navbar ? navbar.offsetHeight : 0;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - navbarHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -302,7 +310,7 @@ export default function App() {
   return (
     <>
       {/* --- Navbar --- (Movida para fora do container principal para evitar problemas de overflow) */}
-      <nav className={`fixed w-full z-50 transition-all duration-300 
+      <nav id="main-navbar" className={`fixed w-full z-50 transition-all duration-300 
         ${isScrolled ? 'bg-white shadow-md py-3' : 'bg-transparent py-5'}
       `}>
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
